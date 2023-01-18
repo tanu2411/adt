@@ -1,0 +1,172 @@
+1)Table creation:
+ 
+create table Emp1(Eno number(7),Ename varchar2(20),Address varchar2(20));
+Table created.
+ 
+2)Insertion:
+ 
+ insert into Emp1 values(101,'Samruddhi','Kudal');
+1 row created.
+insert into Emp1 values(102,'Akshata','Chiplun');
+1 row created.
+ insert into Emp1 values(103,'Rashmi','Kankavali');
+1 row created.
+ insert into Emp1 values(104,'Prajakta','Latur');
+1 row created.
+insert into Emp1 values(105,'Kavita','Lanja');1 row created.
+ insert into Emp1 values(106,'Harshada','Ratnagiri');
+1 row created.
+insert into Emp1 values(107,'Shweta','Oros');
+1 row created.
+ insert into Emp1 values(108,'Tejal','Jalgaon');
+1 row created.
+ insert into Emp1 values(109,'Sheetal','Pune');
+1 row created.
+ insert into Emp1 values(110,'Manasi','Shirgaon');
+1 row created.
+ 
+
+SQL> select *from Emp1;
+ 
+       ENO ENAME                ADDRESS
+---------- -------------------- --------------------
+       101 Samruddhi            Kudal
+       102 Akshata              Chiplun
+       103 Rashmi               Kankavali
+       104 Prajakta             Latur
+       105 Kavita               Lanja
+       106 Harshada             Ratnagiri
+       107 Shweta               Oros
+       108 Tejal                Jalgaon
+       109 Sheetal              Pune
+       110 Manasi               Shirgaon
+ 
+10 rows selected. 
+ 
+
+ 
+3)Table creation:
+ 
+create table Emp2(Eno number(7),Email varchar2(20),salary number(10));
+Table created.
+ 
+4)Insertion:
+ 
+ insert into Emp2 values(101,'Samruddhi@yahoo.com',10000);
+1 row created.
+ insert into Emp2 values(102,'Akshata@gmail.com',20000);
+1 row created.
+ insert into Emp2 values(103,'Rashmi@yahoo.com',13000);
+1 row created.
+ insert into Emp2 values(104,'Prajakta@yahoo.com',15000);
+1 row created.
+ insert into Emp2 values(105,'kavita@gmail.com',11000);
+1 row created.
+ insert into Emp2 values(106,'Harshada@yahoo.com',10000);
+1 row created.
+ insert into Emp2 values(107,'Shweta@yahoo.com',16000);
+1 row created.
+ insert into Emp2 values(108,'Tejal@yahoo.com',25000);
+1 row created.
+insert into Emp2 values(109,'Sheetal@yahoo.com',12000);
+1 row created.
+ insert into Emp2 values(110,'Manasi@rediff.com',10000);
+1 row created.
+  
+
+select * from Emp2;
+ 
+       ENO EMAIL                    SALARY
+---------- -------------------- ----------
+       101 Samruddhi@yahoo.com       10000
+       102 Akshata@gmail.com         20000
+       103 Rashmi@yahoo.com          13000
+       104 Prajakta@yahoo.com        15000
+       105 kavita@gmail.com          11000
+       106 Harshada@yahoo.com        10000
+       107 Shweta@yahoo.com          16000
+       108 Tejal@yahoo.com           25000
+       109 Sheetal@yahoo.com         12000
+       110 Manasi@rediff.com         10000
+ 
+10 rows selected.
+ 
+
+
+
+
+ 
+5)Link creation:
+ 
+CREATE PUBLIC DATABASE LINK EMP_LINK1 CONNECT TO system IDENTIFIED BY manager USING 'ORCL';
+ 
+Database link created.
+ 
+ CREATE PUBLIC DATABASE LINK EMP_LINK2 CONNECT TO system IDENTIFIED BY manager USING 'ORCL';
+Database link created.
+ 
+QUERiES :
+ 
+
+1. Find the salary of all employees.
+select distinct Eno from Emp1@emp_link1
+  2 union
+  3 select distinct salary from Emp2@emp_link2;
+
+ 
+
+       ENO                                                           Salary
+  
+      101                                                                   10000
+      102                                                                  11000
+      103                                                                  12000
+      104				                  13000
+      105					      14000
+      106					      15000
+      107					      16000
+      108					       20000
+      109					       25000
+      110
+ 
+18 rows selected. 
+2. Find the email of all employees where salary is = 20,000.
+select distinct Emp1.Eno@emp_link1,Emp2.Email@emp_link2 from Emp1@emp_link1,Emp2@emp_link2 wher
+e Emp2.salary@emp_link2=20000 and Emp1.eno@emp_link1=Emp2.eno@emp_link2;
+ 
+       ENO EMAIL
+---------- --------------------
+       102  Akshata@gmail.com
+ 
+3. Find the employee name and email where employee number is known.
+ select distinct Emp1.Ename@emp_link1,Emp2.Email@emp_link2 from Emp1@emp_link1,Emp2@emp_link2 wh
+ere Emp1.Eno@emp_link1=101 and Emp1.eno@emp_link1=Emp2.eno@emp_link2;
+ 
+ENAME                EMAIL
+-------------------- --------------------
+Samruddhi            Samruddhi@yahoo.com
+ 
+4. Find the employee name and address where employee number is known.
+ select distinct Emp1.Ename@emp_link1,Emp1.address@emp_link1 from Emp1@emp_link1,Emp2@emp_link2 
+where Emp2.Eno@emp_link2=105 and Emp1.eno@emp_link1=Emp2.eno@emp_link2;
+ 
+ENAME                ADDRESS
+-------------------- --------------------
+Kavita               Lanja
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
