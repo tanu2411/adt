@@ -1,0 +1,119 @@
+1) Creating tables
+ 
+Create table university1(no number(3) primary key,name varchar2(20),shape MDSYS.SDO_GEOMETRY);
+ 
+2) Inserting Values In The Tables
+ 
+INSERT INTO university1 VALUES(1,'abc',
+MDSYS.SDO_GEOMETRY(
+2003, -- 2-dimensional polygon
+NULL,
+NULL,
+MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 =exterior)
+MDSYS.SDO_ORDINATE_ARRAY(1,1, 5,7) 
+-- only 2 points needed to
+-- define rectangle (lower left and upper right) with
+-- Cartesian-coordinate data
+)
+)
+/
+ 
+INSERT INTO university1 VALUES(2,'pqr',
+MDSYS.SDO_GEOMETRY(
+2003, -- 2-dimensional polygon
+NULL,
+NULL,
+MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1), 
+-- one polygon (exterior polygon ring)
+MDSYS.SDO_ORDINATE_ARRAY(5,1, 8,1, 8,6, 5,7, 5,1)
+)
+)
+/
+ 
+INSERT INTO university1 VALUES(3,'mno',
+MDSYS.SDO_GEOMETRY(
+2003, -- 2-dimensional polygon
+NULL,
+NULL,
+MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1), 
+-- one polygon (exterior polygon ring)
+MDSYS.SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
+)
+)
+/
+ 
+INSERT INTO university1 VALUES(4,’xyz’,
+MDSYS.SDO_GEOMETRY(
+2003, -- 2-dimensional polygon
+NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,4), -- one circle
+MDSYS.SDO_ORDINATE_ARRAY(8,7, 10,9, 8,11)
+)
+)
+/
+ 
+INSERT INTO USER_SDO_GEOM_METADATA VALUES (’ university1’,’shape’,
+MDSYS.SDO_DIM_ARRAY( 
+MDSYS.SDO_DIM_ELEMENT(’X’, 0, 20, 0.005),
+MDSYS.SDO_DIM_ELEMENT(’Y’, 0, 20, 0.005)
+),
+NULL -- SRID
+)s
+ 
+CREATE INDEX 	university1_idx
+ON university1 (shape) INDEXTYPE IS MDSYS.SPATIAL_INDEX;
+ 
+QUERIES :
+ 
+1. Topological intersection of two geometries.
+ 
+SELECT SDO_GEOM.SDO_INTERSECTION(c_a.shape, c_c.shape, 0.005)
+FROM university c_a, university c_c WHERE c_a.name = 'abc' AND c_c.name = 'mno';
+ 
+SDO_GEOM.SDO_INTERSECTION(C_A.SHAPE,C_C.SHAPE,0.005)(SDO_GTYPE, SDO_SRID, SDO_PO
+--------------------------------------------------------------------------------
+SDO_GEOMETRY(2003, NULL, NULL, SDO_ELEM_INFO_ARRAY(1, 1003, 1), SDO_ORDINATE_ARR
+AY(4, 5, 3, 3, 5, 3, 5, 5, 4, 5))
+ 
+2. Do two geometries have any spatial relationship?
+ 
+SELECT SDO_GEOM.RELATE(c_b.shape, 'anyinteract', c_d.shape, 0.005)
+FROM university c_b, university c_d WHERE c_b.name = 'pqr' AND c_d.name = 'xyz';
+ 
+SDO_GEOM.RELATE(C_B.SHAPE,'ANYINTERACT',C_D.SHAPE,0.005)
+--------------------------------------------------------------------------
+FALSE
+ 
+SELECT SDO_GEOM.RELATE(c_b.shape, 'anyinteract', c_a.shape, 0.005)
+FROM university c_b, university c_a WHERE c_b.name = 'pqr' AND c_a.name = 'abc';
+ 
+SDO_GEOM.RELATE(C_B.SHAPE,'ANYINTERACT',C_A.SHAPE,0.005)
+--------------------------------------------------------------------------------
+TRUE
+ 
+3. Return the areas of all different locations.
+ 
+SELECT name, SDO_GEOM.SDO_AREA(shape, 0.005) FROM university;
+ 
+NAME                 SDO_GEOM.SDO_AREA(SHAPE,0.005)
+-------------------- ------------------------------
+abc                                              24
+pqr                                            16.5
+mno                                               5
+xyz      				12.5663706
+ 
+4. Return the area of just abc.
+ 
+select c.name,SDO_GEOM.SDO_AREA(c.shape,0.005) FROM university c WHERE c.name=’abc’;
+ 
+NAME                 SDO_GEOM.SDO_AREA(C.SHAPE,0.005)
+-------------------- --------------------------------
+abc                                                24d
+ 
+5. Return the distance between two geometries.
+ 
+select SDO_GEOM.SDO_DISTANCE(c_b.shape,c_d.shape,0.005) FROM university c_b,university c_d WHERE c_b.name=’pqr’ and c_d.name=’xyz’;
+ 
+SDO_GEOM.SDO_DISTANCE(C_B.SHAPE,C_D.SHAPE,0.005)
+------------------------------------------------
+                                      .846049894
+ 
