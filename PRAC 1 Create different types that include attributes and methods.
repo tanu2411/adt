@@ -1,0 +1,460 @@
+Define tables for these types by adding a sufficient number of  tuples. Demonstrate insert, update and delete operations on these tables. Execute queries on them.
+SQL> connect
+Enter user-name: system
+Enter password:
+Connected.
+ 
+Step 1 : Create different Types
+ 
+AddressType :
+Create Type AddrType as object(
+   Pincode number(5),
+    Street char(20),
+  City varchar2(20),
+   State varchar2(20));
+    /
+ 
+Type created.
+ 
+BranchType :
+ Create Type BranchType as object(
+   Address AddrType,
+   Phone1 integer,
+   Phone2 integer);
+   /
+ 
+Type created.
+ 
+Create type BranchTableType as table of BranchType;
+    /
+ 
+Type created.
+ 
+AuthorType :
+ Create Type AuthorType as object(
+  Name varchar(50),
+   Address AddrType);
+    /
+ 
+Type created.
+ 
+PublisherType :
+ Create Type PublisherType as object(
+   Name varchar(50),
+   Address AddrType,
+   Branch BranchTableType);
+   /
+ 
+Type created.
+ 
+AuthorListType :
+SQL> Create  type AuthorListType as varray(10) of ref
+  2  AuthorType;
+  3  /
+ 
+Type created.
+
+ 
+ 
+Step 2 : Create different Tables
+ 
+BranchTable :
+SQL> Create Table BranchTableType1 of BranchType;
+ 
+Table created.
+ 
+AuthorTable :
+SQL> Create Table authors of AuthorType;
+ 
+Table created.
+ 
+BookTable :
+SQL> Create Table Books (
+  2  title varchar2(50),
+  3  year date,
+  4  published_by ref  PublisherType,
+  5  authors AuthorListType);
+ 
+Table created.
+ 
+PublisherTable :
+SQL> create table Publishers of PublisherType  nested table Branch
+  2  store as Branchtable;
+ 
+Table created.
+
+ 
+
+ 
+
+ 
+Step 3: Insertion of different values in Tables
+ 
+Insertion of values in AuthorTable :
+ 
+SQL> insert into authors values('stallings',
+   AddrType(5002,'sstreet','pune','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Bijith',
+  2  AddrType(7007,'sstreet','mumbai','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Navathe',
+  2  AddrType(7008,'nstreet','nasik','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Ulman',
+  2  AddrType(7003,'dstreet','goa','goa'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Dhumdhare',
+  2  AddrType(7007,'sstreet','mumbai','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Aho',
+  2  AddrType(7006,'nstreet','mumbai','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('rabiner',
+  2  AddrType(8002,'dstreet','pune','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Dhanovan',
+  2  AddrType(8003,'dstreet','pune','mha'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('R.Ramakrishnan',
+  2  AddrType(8003,'fstreet','Banglore','krt'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Akshata',
+  2  AddrType(8003,'fstreet','Banglore','krt'));
+ 
+1 row created.
+ 
+SQL> insert into authors values('Salivahanan',
+  2  AddrType(8003,'fstreet','Banglore','krt'));
+ 
+1 row created.
+
+ 
+ 
+
+
+ 
+
+Insertion of values in PublisherTable :
+ 
+SQL> insert into Publishers values('tata',
+    AddrType(4002,'rstreet','mumbai','mha'),
+     BranchTableType(BranchType(
+    AddrType(5002,'fstreet','mumbai','mha'),23406,69896)));
+ 
+1 row created.
+ 
+SQL> insert into Publishers values('tata',
+     AddrType(4002,'rstreet','mumbai','mha'),
+     BranchTableType(BranchType(
+     AddrType(5010,'sstreet','mumbai','mha'),25506,69810)));
+ 
+1 row created.
+ 
+SQL>  insert into Publishers values('seth',
+    AddrType(7007,'sstreet','mumbai','mha'),
+     BranchTableType(BranchType(
+    AddrType(7007,'sstreet','mumbai','mha'),4543545,8676775)));
+ 
+1 row created.
+ 
+SQL>  insert into Publishers values('joshi',
+   AddrType(7008,'sstreet','mumbai','mha'),
+     BranchTableType(BranchType(
+  AddrType(1002,'sstreet','nasik','mha'),456767,7675757)));
+ 
+1 row created.
+ 
+SQL>  insert into Publishers values('seth',
+    AddrType(7002,'sstreet','pune','mha'),
+     BranchTableType(BranchType(
+    AddrType(1002,'sstreet','pune','mha'),4543545,8676775)));
+ 
+1 row created.
+ 
+SQL>  insert into Publishers values('chetana',
+   AddrType(6002,'sstreet','nasik','mha'),
+    BranchTableType(BranchType(
+   AddrType(6002,'sstreet','nasik','mha'),4543545,8676775)));
+ 
+1 row created.
+ 
+
+
+ 
+
+ 
+
+
+ 
+Insertion of values in BookTable :
+ 
+SQL> select 'java','28-may-1983',ref(pub),AuthorListType(ref(aut)) from
+  Publishers pub,authors aut where pub.Name='joshi' and aut.Name='Aho';
+ 
+1 row created.
+ 
+SQL> insert into Books
+    select 'java','28-may-1983',ref(pub),AuthorListType(ref(aut)) from
+    Publishers pub,authors aut where pub.Name='joshi' and aut.Name='Ulman';
+ 
+1 row created.
+ 
+SQL> insert into Books
+    select 'java','28-may-1983',ref(pub),AuthorListType(ref(aut)) from
+    Publishers pub,authors aut where pub.Name='chetana' and  aut.Name='stallings';
+ 
+1 row created.
+ 
+SQL> insert into Books
+    select 'compiler','09-jan-1890',ref(pub),AuthorListType(ref(aut)) from
+  Publishers pub,authors aut where pub.Name='chetana' and aut.Name='Dhanovan';
+ 
+1 row created.
+ 
+SQL> insert into Books
+   select 'c','25-may-1983',ref(pub),AuthorListType(ref(aut)) from
+    Publishers pub,authors aut where pub.Name='tata' and aut.Name='stallings';
+ 
+2 rows created.
+ 
+SQL> insert into Books
+    select 'c','25-may-1983',ref(pub),AuthorListType(ref(aut)) from
+   Publishers pub,authors aut where pub.Name='tata' and aut.Name='rabiner';
+ 
+2 rows created.
+ 
+SQL>  insert into Books
+   select 'c','25-may-1983',ref(pub),AuthorListType(ref(aut)) from
+   Publishers pub,authors aut where pub.Name='tata' and aut.Name='Salivahanan';
+ 
+2 rows created.
+ 
+SQL> insert into Books
+   select 'c','25-may-1983',ref(pub),AuthorListType(ref(aut)) from
+    Publishers pub,authors aut where pub.Name='chetana' and aut.Name='Dhonovan';
+ 
+0 rows created.
+ 
+
+
+
+
+
+
+
+
+ 
+Step 4: Firing queries on created table
+ 
+a) List all of the authors that have the same address as their publisher :
+ 
+SQL>  select a.Name from authors a, Publishers p where a.Address = p.Address;
+ 
+NAME
+--------------------------------------------------
+Dhumdhare
+Dhumdhare
+
+ 
+
+
+ 
+b) List all of the authors that have the same pin code as their publisher :
+ 
+SQL> select a.Name from authors a, Publishers p where a.Address.Pincode = p.Address.Pincode;
+ 
+NAME
+--------------------------------------------------
+Bijith
+Navathe
+Dhumdhare
+ 
+ 
+c)  List all books that have 2 or more authors:
+ 
+SQL> select * from Books b where (select count(*)from table(b.authors)) >1;
+ 
+TITLE
+-------------------
+Java
+c
+ 
+d) List the title of the book that has the most authors :
+ 
+SQL> Select title from Books b, table(b.authors) group by title having count(*)
+    =
+   (select max(count(*))from Books b, table(b.authors) group by title);
+ 
+TITLE
+--------------------------------------------------
+c
+ 
+
+ 
+e) List the name of the publisher that has the most branches :
+ 
+SQL> Select p.Name
+    from Publishers p, table(p.Branch)
+    group by p.Name having count(*)> = all (select count(*)
+   from Publishers p, table(p.Branch)
+  group by Name);
+ 
+NAME
+--------------------------------------------------
+seth
+tata
+
+ 
+ 
+f)Name of authors who have not published a book :
+ 
+SQL> Select a.Name
+    from authors a
+   where not exists( select b.title
+    from Books b, table(b.authors)
+    where a.Name =b.authors.Name);
+ 
+NAME
+----------------
+Dhumdhare
+R.Ramakrishnan
+Navathe
+ 
+g) Move all the branches that belong to the publisher 'tata' to the publisher ‘‘joshi” :
+ 
+SQL> insert into table(select Branch from Publishers where Name = 'joshi') select b.* from Publishers p, table(p.Branch) b
+    where Name = 'tata';
+ 
+2 rows created.
+ 
+ 
+SQL> select * from Publishers;
+ 
+NAME
+--------------------------------------------------
+ADDRESS(PINCODE, STREET, CITY, STATE)
+--------------------------------------------------------------------------------
+BRANCH(ADDRESS(PINCODE, STREET, CITY, STATE), PHONE1, PHONE2)
+--------------------------------------------------------------------------------
+tata
+ADDRTYPE(4002, 'rstreet             ', 'mumbai', 'mha')
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(5002, 'fstreet             ', 'mumbai', 'mha
+'), 23406, 69896))
+ 
+tata
+ADDRTYPE(4002, 'rstreet             ', 'mumbai', 'mha')
+ 
+NAME
+--------------------------------------------------
+ADDRESS(PINCODE, STREET, CITY, STATE)
+--------------------------------------------------------------------------------
+BRANCH(ADDRESS(PINCODE, STREET, CITY, STATE), PHONE1, PHONE2)
+--------------------------------------------------------------------------------
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(5010, 'sstreet             ', 'mumbai', 'mha
+'), 25506, 69810))
+ 
+seth
+ADDRTYPE(7007, 'sstreet             ', 'mumbai', 'mha')
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(7007, 'sstreet             ', 'mumbai', 'mha
+'), 4543545, 8676775))
+ 
+NAME
+--------------------------------------------------
+ADDRESS(PINCODE, STREET, CITY, STATE)
+--------------------------------------------------------------------------------
+BRANCH(ADDRESS(PINCODE, STREET, CITY, STATE), PHONE1, PHONE2)
+--------------------------------------------------------------------------------
+ 
+joshi
+ADDRTYPE(7008, 'sstreet             ', 'mumbai', 'mha')
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(1002, 'sstreet             ', 'nasik', 'mha'
+), 456767, 7675757), BRANCHTYPE(ADDRTYPE(5002, 'fstreet             ', 'mumbai',
+ 'mha'), 23406, 69896), BRANCHTYPE(ADDRTYPE(5010, 'sstreet             ', 'mumba
+i', 'mha'), 25506, 69810))
+ 
+NAME
+--------------------------------------------------
+ADDRESS(PINCODE, STREET, CITY, STATE)
+--------------------------------------------------------------------------------
+BRANCH(ADDRESS(PINCODE, STREET, CITY, STATE), PHONE1, PHONE2)
+--------------------------------------------------------------------------------
+ 
+seth
+ADDRTYPE(7002, 'sstreet             ', 'pune', 'mha')
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(1002, 'sstreet             ', 'pune', 'mha')
+, 4543545, 8676775))
+ 
+chetana
+ 
+NAME
+--------------------------------------------------
+ADDRESS(PINCODE, STREET, CITY, STATE)
+--------------------------------------------------------------------------------
+BRANCH(ADDRESS(PINCODE, STREET, CITY, STATE), PHONE1, PHONE2)
+--------------------------------------------------------------------------------
+ADDRTYPE(6002, 'sstreet             ', 'nasik', 'mha')
+BRANCHTABLETYPE(BRANCHTYPE(ADDRTYPE(6002, 'sstreet             ', 'nasik', 'mha'
+), 4543545, 8676775))
+ 
+ 
+6 rows selected.
+ 
+ 
+ h) List all authors who have published more than one book :
+ 
+SQL> select a.Name
+   from authors a, Books b, table(b.authors) v where v.column_value = ref(a) group by a.Name having count(*) > 1;
+
+
+
+
+ 
+NAME
+--------------------------------------------------
+stallings
+Salivahanan
+rabiner
+ 
+i)Name of authors who have published books with at least two different publishers?
+ 
+SQL> select a.Name from authors a,Books b,table(b.authors) v where v.column_value=ref(a) group by a.Name;
+ 
+NAME
+--------------------------------------------------
+stallings
+Salivahanan
+Ulman
+Dhanovan
+Rabiner
+ 
+ 
+j) List all books (title) where the same author appears more than once on the list of authors (assuming that an integrity constraint requiring that the name of an author is unique in a list of authors has not been specified).
+ 
+SQL> select title from authors a, Books b, table(b.authors) v
+    where v.column_value = ref(a) group by title having count(*) > 1
+    ;
+ 
+TITLE
+--------------------------------------------------
+Java
+ 
+
