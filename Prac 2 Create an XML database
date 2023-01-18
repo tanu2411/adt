@@ -1,0 +1,144 @@
+Create a table employee having ( dept id: number, employee_spec: XMLType). The employee_spec is a schema with attributes emp_id, name, email, acc_no, managerEmail, date_of_joining. Insert 5 tuples into the employee table. Fire the queries on XML database.
+ 
+CODE :
+ 
+SQL>connect
+Enter user-name: system
+Enter password:
+Connected.
+ 
+1.	Creating table with XMLType :
+ 
+ create table employee(Emp_id number(3),Emp_specification XMLType);
+ 
+
+ 
+ 
+2.	Inserting values into “employee” table :
+ 
+ insert into employee values(100, XMLType('<Employees><Emp id="1"><name>Rashmi Kalsekar</name><email>rrkalsekar@gmail.com</email><acc_no>111</acc_no><dateofjoining>1990-03-02</dateofjoining></Emp></Employees>'));
+ 
+1 row created.
+ 
+SQL> insert into employee values(200, XMLType('<Employees><Emp id="2"><name>Zeba Siddique</name><email>zebasdq@gmail.com</email><acc_no>222</acc_no><dateofjoining>1998-05-02></dateofjoining></Emp></Employees>'));
+ 
+1 row created.
+ 
+SQL> insert into employee values(300, XMLType('<Employees><Emp id="3"><name>Fiza Shirgaonkar</name><email>fizas@gmail.com</email><acc_no>333</acc_no><dateofjoining>1990-03-09></dateofjoining></Emp></Employees>'));
+ 
+1 row created.
+ 
+SQL> insert into employee values(400, XMLType('<Employees><Emp id="4"><name>Sarika Patankar</name><email>sarikap@gmail.com</email><acc_no>111</acc_no><dateofjoining>1990-11-19></dateofjoining></Emp></Employees>'));
+ 
+1 row created.
+ 
+SQL> insert into employee values(500, XMLType('<Employees><Emp id="5"><name>Zobiya Bhande</name><email>zobi@gmail.com</email><acc_no>555</acc_no><dateofjoining>1990-12-09></dateofjoining></Emp></Employees>'));
+ 
+1 row created.
+ 
+ 
+QUERIES ON XML DATABASE :
+ 
+a] Retrieve the names of employees from the employee table : 
+SQL> SELECT w.Emp_specification.extract('/Employees/Emp/name/text()').getStringVal() "name" FROM employee w;
+ 
+name
+--------------------------------------------------------------------------------
+Rashmi Kalsekar
+Zeba Siddique
+Fiza Shirgaonkar
+Sarika Patankar
+Zobiya Bhande
+
+ 
+ 
+b] Retrieve the acc_no of employees from the employee table : 
+SQL> SELECT w.Emp_specification.extract('/Employees/Emp/acc_no /text()').getStringVal() "acc_no" FROM employee w;
+ 
+acc_no
+--------------------------------------------------------------------------------
+111
+222
+333
+111
+555
+  
+c] Retrieve the names, acc_no, emails of employee from the employee table :
+
+SQL> SELECT w.Emp_specification.extract('/Employees/Emp/name/text()').getStringVal() "name", w.Emp_specification.extract('/Employees/Emp/acc_no /text()').getStringVal() "acc_no", w.Emp_specification.extract('/Employees/Emp/email /text()').getStringVal() "email " FROM employee w;
+ 
+name
+--------------------------------------------------------------------------------
+acc_no
+--------------------------------------------------------------------------------
+email
+--------------------------------------------------------------------------------
+ 
+Rashmi Kalsekar
+111
+rrkalsekar@gmail.com 
+Zeba Siddique
+222
+zebasdq@gmail.com 
+name
+--------------------------------------------------------------------------------
+acc_no
+--------------------------------------------------------------------------------
+email
+--------------------------------------------------------------------------------
+ 
+Fiza Shirgaonkar
+333
+fizas@gmail.com
+ 
+Sarika Patankar
+111
+name
+--------------------------------------------------------------------------------
+acc_no
+--------------------------------------------------------------------------------
+email
+--------------------------------------------------------------------------------
+sarikap@gmail.com 
+Zobiya Bhande
+555
+zobi@gmail.com
+ 
+ 
+d] Update the third record from the table and display the name of employees :
+ 
+SQL> UPDATE employee w SET Emp_specification=XMLType('<Employees><Emp id="3"><name>Omkar Bhatkar</name></Emp></Employees>') WHERE w.Emp_specification.extract('/Employees/Emp/acc_no/text()').getStringVal()='333';
+ 
+1 row updated.
+ 
+SQL> SELECT w.Emp_specification.extract('/Employees/Emp/name/text()').getStringVal() "name" FROM employee w;
+ 
+name
+--------------------------------------------------------------------------------
+Rashmi Kalsekar
+Zeba Siddique
+Omkar Bhatkar
+Sarika Patankar
+Zobiya Bhande
+  
+e] Delete the fifth record from the table :
+ 
+SQL> DELETE FROM employee w WHERE w.Emp_specification.extract('/Employees/Emp/acc_no/text()').getStringVal()='555';
+ 
+1 row deleted.
+ 
+SQL> SELECT w.Emp_specification.extract('/Employees/Emp/name/text()').getStringVal() "name" FROM employee w;
+ 
+name
+--------------------------------------------------------------------------------
+Rashmi Kalsekar
+Zeba Siddique
+Omkar Bhatkar
+Sarika Patankar
+
+
+
+
+
+
+
