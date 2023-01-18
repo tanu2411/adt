@@ -1,0 +1,157 @@
+ 
+View all databases :
+ 
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+ 
+Create a new or switch databases :
+ 
+> use msc
+switched to db msc
+> use comments
+switched to db comments
+ 
+View current Database :
+ 
+> db
+Comments
+ 
+Delete Database ‘comments’:
+ 
+> db.dropDatabase()
+{ "ok" : 1 }
+ 
+> db
+Msc
+ 
+Create a collection :
+ 
+> db.createCollection('info')
+{ "ok" : 1 }
+> db.createCollection('practical')
+{ "ok" : 1 }
+ 
+Show Collections :
+ 
+> show collections
+Info
+Practical
+ 
+Drop a collection named ‘practical’ :
+ 
+>db.practical.drop()
+> show collections
+Info
+ 
+> use mcs
+switched to db msc
+ 
+Insert One Row :
+ 
+> db.practical.insert({ 'name': 'Zeba',
+... 'lang': 'Julia',
+... 'member-since': 5 })
+WriteResult({ "nInserted" : 1 })
+>
+ 
+Insert many Rows :
+ 
+> db.info.insertMany([{ 'name': 'Omkar', 'lang': 'Java', 'member-since': 4}, {'name':Sarika, 'lang': 'Python', 'member-since': 6 }, { 'name': 'Fiza', 'lang': 'Java', 'member-since': 3},])
+{
+        "acknowledged" : true,
+        "insertedIds" : [
+                ObjectId("62fded19ac358c959599095a"),
+                ObjectId("62fded19ac358c959599095b"),
+                ObjectId("62fded19ac358c959599095d")
+        ]
+}
+ 
+Show all Rows in a Collection :
+ 
+> db.info.find()
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 5 }
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "lang" : "Java", "member-since" : 4 }
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 6 }
+{ "_id" : ObjectId("62fded19ac358c959599095d"), "name" : "Fiza", "lang" : "Java", "member-since" : 3 }
+>
+ 
+Find the first row matching the object :
+ 
+>db.comments.findOne({name: Zeba})
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 5 }
+ 
+Search in a MongoDB Database :
+>db.comments.find({lang:'Python'})
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 6 }
+ 
+Limit the number of rows in output :
+ 
+>db.comments.find().limit(2)
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 5 }
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "lang" : "Java", "member-since" : 4 }
+ 
+Count the number of rows in the output :
+ 
+>db.comments.find().count()
+2
+ 
+Update a row :
+ 
+>db.comments.updateOne({name: Zeba}
+{$set: {'name':Zeba,
+    'lang': 'Julia',
+    'member_since': 7
+}}, {upsert: true})
+WriteResult({“nMatched” : 1, “nUpserted” : 1, “nModified” : 1 })
+ 
+>db.comments.findOne({name: Zeba})
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 7 }
+ 
+MongoDB Increment Operator :
+ 
+>db.comments.update({name: 'Sarika'},
+{$inc:{
+    member_since: 2
+}})
+ 
+>db.comments.findOne({name: Sarika})
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 8 }
+ 
+MongoDB Rename Operator : 
+ 
+>db.comments.update({name: 'Omkar'},
+{$rename:{
+    lang: 'language'
+}})
+ 
+>db.comments.findOne({name: Omkar})
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "language" : "Java", "member-since" : 4 }
+ 
+Delete Row :
+ 
+>db.comments.remove({name: 'Fiza'})
+WriteResult({“nRemoved” : 1 })
+ 
+> db.info.find()
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 7 }
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "lang" : "Java", "member-since" : 4 }
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 8 }
+ 
+Less than/Greater than/ Less than or Equal/Greater than or Equal :
+ 
+>db.comments.find({member_since: {$lt: 7}})
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "lang" : "Java", "member-since" : 4 }
+ 
+>db.comments.find({member_since: {$lte: 7}})
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 7 }
+{ "_id" : ObjectId("62fded19ac358c959599095a"), "name" : "Omkar", "lang" : "Java", "member-since" : 4 }
+ 
+>db.comments.find({member_since: {$gt: 7}})
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 8 }
+ 
+>db.comments.find({member_since: {$gte: 7}})
+{ "_id" : ObjectId("62fded57ac358c959599095c"), "name" : "Zeba", "lang" : "Julia", "member-since" : 7 }
+{ "_id" : ObjectId("62fded19ac358c959599095b"), "name" : "Sarika", "lang" : "Python", "member-since" : 8 }
+ 
